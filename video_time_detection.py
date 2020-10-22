@@ -17,8 +17,9 @@ times=[]#list to store time stamps
 df = pandas.DataFrame(columns=["Start","End"])#pandas data frame to store objects
 
 video = cv2.VideoCapture(0)
-#number= video from camera, else enter video file, i.e movie.mp4
+# the number indicates the video is from a camera camera, else enter video file, i.e movie.mp4
 
+#view the video
 while True:
     check, frame = video.read()
     status = 0
@@ -27,26 +28,25 @@ while True:
     #print(check)#check if the video is running
     #print(frame)#numPy array, 3D, colour array with 3 bands
     
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)#converts to gray scale
-    gray = cv2.GaussianBlur(gray, (21,21), 0)
-    #gaussian blur: removes noise and increases accuracy
+    #converts to gray scale
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (21,21), 0) #gaussian blur: removes noise and increases accuracy
+    
     
     if first_frame is None:
         first_frame = gray
-        #stores the fisrt frame in the variable to use as a base for comparison   
-        continue#go to the begining of the loop, don't go to the rest of the code
+        #stores the first frame in the variable to use as a base for comparison   
+        continue#go to the begining of the loop till condition is satisfied, don't go to the rest of the code
     
     delta_frame = cv2.absdiff(first_frame, gray)
     
+    #set the threshold value
     #thresh_value = cv2.threshold(delta_frame, 30, 255, cv2.THRESH_BINARY)[0]
     #print(thresh_value)
     thresh_frame = cv2.threshold(delta_frame, 60, 255, cv2.THRESH_BINARY)[1]
     #incase still see shadows, bump up the threshold
     #Returns a tuple with 2 values, first value suggests the threshold value to set
-
-    
     thresh_frame = cv2.dilate(thresh_frame, None, iterations=2 )
-    
     (cnts,_)= cv2.findContours(thresh_frame.copy(),cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     #to create the boundary around a moving object
@@ -76,7 +76,7 @@ while True:
     cv2.imshow("Colour Frame", frame)#the window that will indicate boundaries around moving objects
     
     key = cv2.waitKey(1)
-    #0 means any key
+    #0 means hit any key to exit
     #else, time in miliseconds
     #print(gray)
     #print(delta_frame)#difference btn intensities of the corresponding pixels
